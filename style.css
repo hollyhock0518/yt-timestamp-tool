@@ -1,0 +1,46 @@
+#ts-helper-container {
+  display: block !important;
+  width: 100% !important;
+  margin: 10px 0 15px 0 !important;
+  padding: 12px !important;
+  background-color: #f9f9f9 !important;
+  border: 1px solid #e5e5e5 !important;
+  border-radius: 12px !important;
+  box-sizing: border-box !important;
+}
+
+/* チャンネルページ等のレイアウト崩れ防止 */
+ytd-browse #ts-helper-container,
+ytd-search #ts-helper-container {
+  display: none !important;
+}
+
+.ts-inject-box {
+  display: flex !important;
+  gap: 8px !important;
+  align-items: center !important;
+}
+
+#ts-input {
+  flex: 1 !important;
+  padding: 8px 16px !important;
+  border: 1px solid #ccc !important;
+  border-radius: 20px !important;
+  background: white !important;
+  color: black !important;
+}
+
+#ts-add-btn {
+  background-color: #ffcce2 !important;
+  color: #333 !important;
+  padding: 8px 20px !important;
+  border-radius: 20px !important;
+  border: none !important;
+  cursor: pointer !important;
+  font-weight: bold !important;
+  white-space: nowrap !important;
+}
+
+#ts-add-btn:hover {
+  background-color: #ffb3d1 !important;
+}
