@@ -118,8 +118,8 @@ class TimestampUI {
         </div>
 
         <div class="ts-group action-group">
-          <button id="ts-add-now-btn" class="ts-action-btn">現在</button>
-          <button id="ts-add-15-btn" class="ts-action-btn primary">15s前</button>
+          <button id="ts-add-now-btn" class="ts-action-btn primary">現在を記録</button>
+          <button id="ts-add-15-btn" class="ts-action-btn primary">15秒前を記録</button>
         </div>
       </div>
     `;
