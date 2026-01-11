@@ -24,6 +24,7 @@ class StorageManager {
  */
 class TranslationService {
   static async translate(text) {
+    if (!text) return "";
     try {
       const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=ja|en`);
       const data = await res.json();
@@ -38,11 +39,18 @@ class TranslationService {
  * YouTubeの動画制御ユーティリティ
  */
 class YouTubeVideoControl {
-  static getCurrentTimeFormatted(offsetSeconds = 15) {
-    const video = document.querySelector('video');
-    if (!video) return null;
+  static get video() {
+    return document.querySelector('video');
+  }
+
+  static skip(seconds) {
+    if (this.video) this.video.currentTime += seconds;
+  }
+
+  static getCurrentTimeFormatted(offsetSeconds = 0) {
+    if (!this.video) return null;
     
-    const time = Math.max(0, Math.floor(video.currentTime) - offsetSeconds);
+    const time = Math.max(0, Math.floor(this.video.currentTime) - offsetSeconds);
     const h = Math.floor(time / 3600);
     const m = Math.floor((time % 3600) / 60);
     const s = Math.floor(time % 60);
@@ -76,9 +84,18 @@ class TimestampUI {
     const container = document.createElement('div');
     container.id = this.containerId;
     container.innerHTML = `
+      <div class="ts-control-row">
+        <button class="ts-skip-btn" data-skip="-10">10秒戻る</button>
+        <button class="ts-skip-btn" data-skip="-5">5秒戻る</button>
+        <button class="ts-skip-btn" data-skip="-1">1秒戻る</button>
+        <button class="ts-skip-btn" data-skip="1">+1秒進む</button>
+        <button class="ts-skip-btn" data-skip="5">5秒進む</button>
+        <button class="ts-skip-btn" data-skip="10">10秒進む</button>
+      </div>
       <div class="ts-inject-box">
-        <input type="text" id="ts-input" placeholder="15秒前の内容を記録...">
-        <button id="ts-add-btn">記録</button>
+        <input type="text" id="ts-input" placeholder="メモを入力...">
+        <button id="ts-add-now-btn" class="ts-action-btn primary">現在</button>
+        <button id="ts-add-15-btn" class="ts-action-btn primary">15秒前</button>
       </div>
     `;
 
@@ -87,25 +104,31 @@ class TimestampUI {
   }
 
   _setupEvents(container) {
-    const btn = container.querySelector('#ts-add-btn');
     const input = container.querySelector('#ts-input');
+    const btnNow = container.querySelector('#ts-add-now-btn');
+    const btn15 = container.querySelector('#ts-add-15-btn');
 
-    const handleSave = async () => {
+    // スキップボタンの設定
+    container.querySelectorAll('.ts-skip-btn').forEach(btn => {
+      btn.onclick = () => YouTubeVideoControl.skip(parseInt(btn.dataset.skip));
+    });
+
+    // 記録処理
+    const handleSave = async (offset) => {
       const text = input.value.trim();
       if (!text) return;
 
-      btn.disabled = true;
-      btn.textContent = "...";
+      [btnNow, btn15].forEach(b => b.disabled = true);
       
-      await this.onSave(text);
+      await this.onSave(text, offset);
       
       input.value = '';
-      btn.disabled = false;
-      btn.textContent = "記録";
+      [btnNow, btn15].forEach(b => b.disabled = false);
     };
 
-    btn.onclick = (e) => { e.preventDefault(); handleSave(); };
-    input.onkeypress = (e) => { if (e.key === 'Enter') handleSave(); };
+    btnNow.onclick = () => handleSave(0);
+    btn15.onclick = () => handleSave(15);
+    input.onkeypress = (e) => { if (e.key === 'Enter') handleSave(15); };
   }
 }
 
@@ -114,8 +137,8 @@ class TimestampUI {
  */
 const App = {
   init() {
-    const ui = new TimestampUI(async (text) => {
-      const timeStr = YouTubeVideoControl.getCurrentTimeFormatted(15);
+    const ui = new TimestampUI(async (text, offset) => {
+      const timeStr = YouTubeVideoControl.getCurrentTimeFormatted(offset);
       if (!timeStr) return;
 
       const engText = await TranslationService.translate(text);
