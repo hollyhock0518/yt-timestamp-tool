@@ -1,116 +1,97 @@
 #ts-helper-container {
-  display: flex !important;
-  flex-direction: column !important;
-  gap: 12px !important;
   width: 100% !important;
-  margin: 10px 0 15px 0 !important;
-  padding: 15px !important;
-  background-color: #fff9fb !important; /* 大人可愛いパステルピンク背景 */
+  margin: 10px 0 !important;
+  padding: 8px 12px !important;
+  background-color: #fff9fb !important;
   border: 1px solid #ffd1e8 !important;
-  border-radius: 16px !important;
+  border-radius: 30px !important; /* 角を丸くしてYouTubeに馴染ませる */
   box-sizing: border-box !important;
-  box-shadow: 0 2px 8px rgba(0,0,0,0.05) !important;
 }
 
-/* 1行目: 時間操作ボタン列 */
-.ts-control-row {
+.ts-flat-row {
   display: flex !important;
-  justify-content: space-between !important;
-  gap: 6px !important;
+  align-items: center !important;
+  gap: 8px !important;
+}
+
+.ts-group {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+}
+
+/* スキップボタン群 */
+.skip-group {
+  flex-shrink: 0 !important;
 }
 
 .ts-skip-btn {
-  flex: 1 !important;
-  background-color: white !important;
+  background-color: transparent !important;
   border: 1px solid #ffcce2 !important;
   color: #d16b91 !important;
-  padding: 6px 0 !important;
-  border-radius: 8px !important;
-  font-size: 11px !important;
+  min-width: 32px !important;
+  height: 28px !important;
+  border-radius: 6px !important;
+  font-size: 10px !important;
   font-weight: bold !important;
   cursor: pointer !important;
-  transition: all 0.2s !important;
 }
 
-.ts-skip-btn:hover {
-  background-color: #ffcce2 !important;
-  color: white !important;
-}
-
-/* 2行目: 入力エリア */
-.ts-inject-box {
-  display: flex !important;
-  gap: 10px !important;
-  align-items: center !important;
+/* 入力エリア（ここが伸縮する） */
+.input-group {
+  flex: 1 !important;
+  background: white !important;
+  border: 1px solid #ffcce2 !important;
+  border-radius: 20px !important;
+  padding: 2px 10px !important;
+  overflow: hidden !important;
 }
 
 #ts-input {
   flex: 1 !important;
-  padding: 10px 16px !important;
-  border: 1px solid #ffcce2 !important;
-  border-radius: 25px !important;
-  background: white !important;
-  font-size: 14px !important;
-  outline: none !important;
-}
-
-#ts-input:focus {
-  border-color: #ffb3d1 !important;
-  box-shadow: 0 0 0 2px rgba(255, 179, 209, 0.2) !important;
-}
-
-/* 記録用ボタン共通 */
-.ts-action-btn {
-  padding: 10px 18px !important;
-  border-radius: 25px !important;
-  border: 1px solid #ffcce2 !important;
-  background-color: white !important;
-  color: #d16b91 !important;
-  font-weight: bold !important;
-  cursor: pointer !important;
-  white-space: nowrap !important;
+  border: none !important;
+  padding: 4px 8px !important;
   font-size: 13px !important;
-  transition: all 0.2s !important;
+  outline: none !important;
+  background: transparent !important;
 }
 
-/* 15秒前ボタンを強調 */
+/* 言語選択のミニ表示 */
+.ts-lang-mini {
+  display: flex !important;
+  gap: 6px !important;
+  font-size: 10px !important;
+  color: #d16b91 !important;
+  border-left: 1px solid #eee !important;
+  padding-left: 8px !important;
+  white-space: nowrap !important;
+}
+
+.ts-lang-mini label {
+  cursor: pointer !important;
+}
+
+/* 記録ボタン群 */
+.action-group {
+  flex-shrink: 0 !important;
+}
+
+.ts-action-btn {
+  padding: 6px 12px !important;
+  border-radius: 15px !important;
+  border: none !important;
+  background-color: #f0f0f0 !important;
+  color: #666 !important;
+  font-weight: bold !important;
+  font-size: 11px !important;
+  cursor: pointer !important;
+}
+
 .ts-action-btn.primary {
   background-color: #ffcce2 !important;
   color: #d16b91 !important;
 }
 
 .ts-action-btn:hover {
-  filter: brightness(0.95) !important;
-  transform: translateY(-1px) !important;
-}
-
-.ts-action-btn:disabled {
-  opacity: 0.5 !important;
-  cursor: not-allowed !important;
-}
-
-.ts-lang-row {
-  display: flex !important;
-  gap: 15px !important;
-  padding: 0 5px !important;
-  font-size: 12px !important;
-  color: #d16b91 !important;
-  font-weight: bold !important;
-}
-
-.ts-lang-row label {
-  display: flex !important;
-  align-items: center !important;
-  gap: 4px !important;
-  cursor: pointer !important;
-}
-
-.ts-lang-row input[type="radio"] {
-  cursor: pointer !important;
-  accent-color: #d16b91 !important; /* ラジオボタンの色をピンクに */
-}
-
-/* 入力欄の微調整 */
-.ts-inject-box {
-  margin-top: 5px !important;
+  filter: brightness(0.9) !important;
 }

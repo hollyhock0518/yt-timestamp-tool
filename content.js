@@ -101,24 +101,26 @@ class TimestampUI {
     const container = document.createElement('div');
     container.id = this.containerId;
     container.innerHTML = `
-      <div class="ts-control-row">
-        <button class="ts-skip-btn" data-skip="-10">-10s</button>
-        <button class="ts-skip-btn" data-skip="-5">-5s</button>
-        <button class="ts-skip-btn" data-skip="-1">-1s</button>
-        <button class="ts-skip-btn" data-skip="1">+1s</button>
-        <button class="ts-skip-btn" data-skip="5">+5s</button>
-        <button class="ts-skip-btn" data-skip="10">+10s</button>
-      </div>
-      
-      <div class="ts-lang-row">
-        <label><input type="radio" name="ts-lang" value="en" ${currentLang === 'en' ? 'checked' : ''}> 英語</label>
-        <label><input type="radio" name="ts-lang" value="es" ${currentLang === 'es' ? 'checked' : ''}> スペイン語</label>
-      </div>
+      <div class="ts-flat-row">
+        <div class="ts-group skip-group">
+          <button class="ts-skip-btn" data-skip="-10">-10秒</button>
+          <button class="ts-skip-btn" data-skip="-1">-1秒</button>
+          <button class="ts-skip-btn" data-skip="1">+1秒</button>
+          <button class="ts-skip-btn" data-skip="10">+10秒</button>
+        </div>
 
-      <div class="ts-inject-box">
-        <input type="text" id="ts-input" placeholder="メモを入力...">
-        <button id="ts-add-now-btn" class="ts-action-btn">現在</button>
-        <button id="ts-add-15-btn" class="ts-action-btn primary">15秒前</button>
+        <div class="ts-group input-group">
+          <input type="text" id="ts-input" placeholder="メモ...">
+          <div class="ts-lang-mini">
+            <label><input type="radio" name="ts-lang" value="en" ${currentLang === 'en' ? 'checked' : ''}>英語</label>
+            <label><input type="radio" name="ts-lang" value="es" ${currentLang === 'es' ? 'checked' : ''}>スペイン語</label>
+          </div>
+        </div>
+
+        <div class="ts-group action-group">
+          <button id="ts-add-now-btn" class="ts-action-btn">現在</button>
+          <button id="ts-add-15-btn" class="ts-action-btn primary">15s前</button>
+        </div>
       </div>
     `;
 
