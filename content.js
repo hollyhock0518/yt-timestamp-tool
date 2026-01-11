@@ -17,16 +17,31 @@ class StorageManager {
       chrome.storage.local.set({ 'savedTimestamps': list }, resolve);
     });
   }
+
+  // 言語設定の保存
+  static async setLanguage(lang) {
+    return chrome.storage.local.set({ 'appLanguage': lang });
+  }
+
+  // 言語設定の取得
+  static async getLanguage() {
+    return new Promise((resolve) => {
+      chrome.storage.local.get(['appLanguage'], (res) => {
+        resolve(res.appLanguage || 'en'); // デフォルトは英語
+      });
+    });
+  }
 }
 
 /**
  * 外部翻訳APIとの通信
  */
 class TranslationService {
-  static async translate(text) {
+  static async translate(text, targetLang = 'en') {
     if (!text) return "";
     try {
-      const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=ja|en`);
+      // langpairを ja|[targetLang] に動的に変更
+      const res = await fetch(`https://api.mymemory.translated.net/get?q=${encodeURIComponent(text)}&langpair=ja|${targetLang}`);
       const data = await res.json();
       return data.responseData ? data.responseData.translatedText : "Error";
     } catch (e) {
@@ -49,7 +64,6 @@ class YouTubeVideoControl {
 
   static getCurrentTimeFormatted(offsetSeconds = 0) {
     if (!this.video) return null;
-    
     const time = Math.max(0, Math.floor(this.video.currentTime) - offsetSeconds);
     const h = Math.floor(time / 3600);
     const m = Math.floor((time % 3600) / 60);
@@ -74,27 +88,36 @@ class TimestampUI {
     if (existing) existing.remove();
   }
 
-  inject() {
+  async inject() {
     if (!window.location.pathname.startsWith('/watch')) return;
     if (document.getElementById(this.containerId)) return;
 
     const target = document.querySelector('ytd-watch-metadata #title');
     if (!target) return;
 
+    // 現在の言語設定を取得
+    const currentLang = await StorageManager.getLanguage();
+
     const container = document.createElement('div');
     container.id = this.containerId;
     container.innerHTML = `
       <div class="ts-control-row">
-        <button class="ts-skip-btn" data-skip="-10">10秒戻る</button>
-        <button class="ts-skip-btn" data-skip="-5">5秒戻る</button>
-        <button class="ts-skip-btn" data-skip="-1">1秒戻る</button>
-        <button class="ts-skip-btn" data-skip="1">+1秒進む</button>
-        <button class="ts-skip-btn" data-skip="5">5秒進む</button>
-        <button class="ts-skip-btn" data-skip="10">10秒進む</button>
+        <button class="ts-skip-btn" data-skip="-10">-10s</button>
+        <button class="ts-skip-btn" data-skip="-5">-5s</button>
+        <button class="ts-skip-btn" data-skip="-1">-1s</button>
+        <button class="ts-skip-btn" data-skip="1">+1s</button>
+        <button class="ts-skip-btn" data-skip="5">+5s</button>
+        <button class="ts-skip-btn" data-skip="10">+10s</button>
       </div>
+      
+      <div class="ts-lang-row">
+        <label><input type="radio" name="ts-lang" value="en" ${currentLang === 'en' ? 'checked' : ''}> 英語</label>
+        <label><input type="radio" name="ts-lang" value="es" ${currentLang === 'es' ? 'checked' : ''}> スペイン語</label>
+      </div>
+
       <div class="ts-inject-box">
         <input type="text" id="ts-input" placeholder="メモを入力...">
-        <button id="ts-add-now-btn" class="ts-action-btn primary">現在</button>
+        <button id="ts-add-now-btn" class="ts-action-btn">現在</button>
         <button id="ts-add-15-btn" class="ts-action-btn primary">15秒前</button>
       </div>
     `;
@@ -108,9 +131,14 @@ class TimestampUI {
     const btnNow = container.querySelector('#ts-add-now-btn');
     const btn15 = container.querySelector('#ts-add-15-btn');
 
-    // スキップボタンの設定
+    // スキップボタン
     container.querySelectorAll('.ts-skip-btn').forEach(btn => {
       btn.onclick = () => YouTubeVideoControl.skip(parseInt(btn.dataset.skip));
+    });
+
+    // 言語切り替え時の保存処理
+    container.querySelectorAll('input[name="ts-lang"]').forEach(radio => {
+      radio.onchange = (e) => StorageManager.setLanguage(e.target.value);
     });
 
     // 記録処理
@@ -118,9 +146,10 @@ class TimestampUI {
       const text = input.value.trim();
       if (!text) return;
 
-      [btnNow, btn15].forEach(b => b.disabled = true);
+      const selectedLang = container.querySelector('input[name="ts-lang"]:checked').value;
       
-      await this.onSave(text, offset);
+      [btnNow, btn15].forEach(b => b.disabled = true);
+      await this.onSave(text, offset, selectedLang);
       
       input.value = '';
       [btnNow, btn15].forEach(b => b.disabled = false);
@@ -137,12 +166,12 @@ class TimestampUI {
  */
 const App = {
   init() {
-    const ui = new TimestampUI(async (text, offset) => {
+    const ui = new TimestampUI(async (text, offset, lang) => {
       const timeStr = YouTubeVideoControl.getCurrentTimeFormatted(offset);
       if (!timeStr) return;
 
-      const engText = await TranslationService.translate(text);
-      const entry = `${timeStr} ${text} (${engText})`;
+      const translatedText = await TranslationService.translate(text, lang);
+      const entry = `${timeStr} ${text} (${translatedText})`;
       await StorageManager.addTimestamp(entry);
     });
 

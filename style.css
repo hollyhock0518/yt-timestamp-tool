@@ -88,3 +88,29 @@
   opacity: 0.5 !important;
   cursor: not-allowed !important;
 }
+
+.ts-lang-row {
+  display: flex !important;
+  gap: 15px !important;
+  padding: 0 5px !important;
+  font-size: 12px !important;
+  color: #d16b91 !important;
+  font-weight: bold !important;
+}
+
+.ts-lang-row label {
+  display: flex !important;
+  align-items: center !important;
+  gap: 4px !important;
+  cursor: pointer !important;
+}
+
+.ts-lang-row input[type="radio"] {
+  cursor: pointer !important;
+  accent-color: #d16b91 !important; /* ラジオボタンの色をピンクに */
+}
+
+/* 入力欄の微調整 */
+.ts-inject-box {
+  margin-top: 5px !important;
+}
